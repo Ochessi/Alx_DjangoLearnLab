@@ -1,7 +1,7 @@
 from django import forms
 from django.contrib.auth.models import User
 from django.contrib.auth.forms import UserCreationForm
-from .models import Post
+from .models import Post, Comment
 
 class UserRegisterForm(UserCreationForm):
     email = forms.EmailField(required=True)
@@ -13,4 +13,18 @@ class UserRegisterForm(UserCreationForm):
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['title', 'content']        
+        fields = ['title', 'content'] 
+
+class CommentForm(forms.ModelForm):
+    class Meta:
+        model = Comment
+        fields = ['content']
+        widgets = {
+            'content': forms.Textarea(attrs={'rows': 3, 'placeholder': 'Write a comment...'}),
+        }
+
+    def clean_content(self):
+        data = self.cleaned_data['content'].strip()
+        if not data:
+            raise forms.ValidationError("Comment cannot be empty.")
+        return data               
