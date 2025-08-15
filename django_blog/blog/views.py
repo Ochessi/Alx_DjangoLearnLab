@@ -97,7 +97,7 @@ class CommentCreateView(LoginRequiredMixin, CreateView):
     form_class = CommentForm
 
     def post(self, request, *args, **kwargs):
-        post = get_object_or_404(Post, pk=kwargs['post_id'])
+        post = get_object_or_404(Post, pk=kwargs['pk'])
         form = CommentForm(request.POST)
         if form.is_valid():
             comment = form.save(commit=False)
