@@ -10,7 +10,7 @@ from django.views.generic import DetailView, CreateView, UpdateView, DeleteView
 from django.contrib.auth.mixins import LoginRequiredMixin, UserPassesTestMixin
 from django.urls import reverse_lazy
 from django.shortcuts import get_object_or_404
-from .forms import CommentForm
+from .forms import CommentForm, PostForm
 from django.db.models import Q
 
 # Create your views here.
@@ -63,6 +63,7 @@ class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
     fields = ['title', 'content']
     template_name = "blog/post_form.html"
+    form_class = PostForm
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -73,6 +74,7 @@ class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
     fields = ['title', 'content']
     template_name = "blog/post_form.html"
+    form_class = PostForm
 
     def form_valid(self, form):
         form.instance.author = self.request.user
