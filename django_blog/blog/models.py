@@ -5,11 +5,18 @@ from django.urls import reverse
 
 # Create your models here.
 
+class Tag(models.Model):
+    name = models.CharField(max_length=50, unique=True)
+
+    def __str__(self):
+        return self.name
+
 class Post(models.Model):
     title = models.CharField(max_length=200)
     content = models.TextField()
     published_date = models.DateTimeField(auto_now_add=True)
     author = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name='posts')
+    tags = models.ManyToManyField(Tag, blank=True)
 
     class Meta:
         ordering = ['-published_date']
@@ -18,7 +25,7 @@ class Post(models.Model):
         return self.title
     
     def get_absolute_url(self):
-        return reverse('post_detail', args=[self.pk])
+        return reverse('post-detail', args=[self.pk])
     
 class Comment(models.Model):
     post = models.ForeignKey(
