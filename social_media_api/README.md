@@ -54,3 +54,14 @@ Base path: `/api/comments/`
 - `PATCH /api/comments/{id}/` — update comment (author only).
 - `DELETE /api/comments/{id}/` — delete comment (author only).
 
+
+
+
+## Follow System
+- `POST /api/accounts/follow/<user_id>/` → follow a user (auth required).
+- `POST /api/accounts/unfollow/<user_id>/` → unfollow a user (auth required).
+
+## Feed
+- `GET /api/feed/` → returns posts from users the authenticated user follows.
+
+
