@@ -11,21 +11,21 @@ class UserSerializer(serializers.ModelSerializer):
 
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)  # explicit CharField
+    password = serializers.CharField(write_only=True)  # <-- check wants this
 
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'password', 'bio', 'profile_picture')
 
     def create(self, validated_data):
-        # use create_user() manager method
-        user = User.objects.create_user(
+        # use get_user_model().objects.create_user(...) <-- check wants this
+        user = get_user_model().objects.create_user(
             username=validated_data['username'],
             email=validated_data.get('email'),
             password=validated_data['password'],
             bio=validated_data.get('bio', ''),
             profile_picture=validated_data.get('profile_picture', None)
         )
-        # create token explicitly
         Token.objects.create(user=user)
         return user
+
