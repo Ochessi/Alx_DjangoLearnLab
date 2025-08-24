@@ -1,6 +1,6 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
-from .models import Post, Comment
+from .models import Post, Comment, Like
 
 User = get_user_model()
 
@@ -43,3 +43,12 @@ class PostSerializer(serializers.ModelSerializer):
         if request and hasattr(request, 'user'):
             validated_data['author'] = request.user
         return super().create(validated_data)
+
+class LikeSerializer(serializers.ModelSerializer):
+    user = serializers.StringRelatedField(read_only=True)
+    user_id = serializers.IntegerField(source='user.id', read_only=True)
+
+    class Meta:
+        model = Like
+        fields = ['id', 'user', 'user_id', 'post', 'created_at']
+        read_only_fields = ['id', 'user', 'created_at']

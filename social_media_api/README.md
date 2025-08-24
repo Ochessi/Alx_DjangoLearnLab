@@ -65,3 +65,28 @@ Base path: `/api/comments/`
 - `GET /api/feed/` → returns posts from users the authenticated user follows.
 
 
+
+
+## Likes
+- `POST /api/posts/{id}/like/` — Like a post (auth required). Returns Like object.
+- `POST /api/posts/{id}/unlike/` — Unlike a post (auth required).
+
+## Notifications
+- `GET /api/notifications/` — List current user's notifications (auth required).
+- `PATCH /api/notifications/{id}/mark-read/` — Mark notification as read (auth required).
+
+Notifications payload example:
+{
+  "id": 12,
+  "recipient": "alice",
+  "recipient_id": 3,
+  "actor": "bob",
+  "actor_id": 4,
+  "verb": "liked your post",
+  "target": 5,
+  "target_repr": "My first post",
+  "unread": true,
+  "timestamp": "2025-08-24T12:00:00Z"
+}
+
+

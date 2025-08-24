@@ -24,6 +24,8 @@ urlpatterns = [
     path('api/accounts/', include('accounts.urls')),
     path('api-auth/', include('rest_framework.urls')),  # optional browsable login
     path('api/', include('posts.urls')),
+    path('api/notifications/', include('notifications.urls')),
+
 ]
 
 if settings.DEBUG:
