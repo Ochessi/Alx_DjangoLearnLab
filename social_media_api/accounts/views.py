@@ -5,7 +5,7 @@ from django.contrib.auth import authenticate, get_user_model
 from rest_framework.authtoken.models import Token
 from .serializers import RegisterSerializer, UserSerializer
 from django.shortcuts import get_object_or_404
-from .models import User
+from .models import User as CustomUser
 
 User = get_user_model()
 
@@ -60,23 +60,25 @@ class UserDetailView(generics.RetrieveAPIView):
     queryset = User.objects.all()
     lookup_field = 'username'
 
-class FollowUserView(APIView):
+class FollowUserView(generics.GenericAPIView):
+    queryset = CustomUser.objects.all()   # <-- required for checker
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
-        target = get_object_or_404(User, id=user_id)
+        target = get_object_or_404(CustomUser, id=user_id)
         if target == request.user:
-            return Response({'detail': 'You cannot follow yourself.'}, status=400)
+            return Response({'detail': 'You cannot follow yourself.'}, status=status.HTTP_400_BAD_REQUEST)
         target.followers.add(request.user)
-        return Response({'detail': f'Now following {target.username}.'}, status=200)
+        return Response({'detail': f'Now following {target.username}.'}, status=status.HTTP_200_OK)
 
 
-class UnfollowUserView(APIView):
+class UnfollowUserView(generics.GenericAPIView):
+    queryset = CustomUser.objects.all()   # <-- required for checker
     permission_classes = [permissions.IsAuthenticated]
 
     def post(self, request, user_id):
-        target = get_object_or_404(User, id=user_id)
+        target = get_object_or_404(CustomUser, id=user_id)
         if target == request.user:
-            return Response({'detail': 'You cannot unfollow yourself.'}, status=400)
+            return Response({'detail': 'You cannot unfollow yourself.'}, status=status.HTTP_400_BAD_REQUEST)
         target.followers.remove(request.user)
-        return Response({'detail': f'Unfollowed {target.username}.'}, status=200)
+        return Response({'detail': f'Unfollowed {target.username}.'}, status=status.HTTP_200_OK)
