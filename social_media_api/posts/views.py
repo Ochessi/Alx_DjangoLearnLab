@@ -1,7 +1,6 @@
 from rest_framework import viewsets, permissions, status, filters, generics
 from rest_framework.decorators import action, api_view, permission_classes
 from rest_framework.response import Response
-from django.shortcuts import get_object_or_404
 from django.contrib.contenttypes.models import ContentType
 from rest_framework.pagination import PageNumberPagination
 from rest_framework.views import APIView
@@ -35,10 +34,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def like(self, request, pk=None):
-        """
-        POST /api/posts/{pk}/like/  — like the post
-        """
-        post = get_object_or_404(Post, pk=pk)
+        post = generics.get_object_or_404(Post, pk=pk)
         like, created = Like.objects.get_or_create(user=request.user, post=post)
         if not created:
             return Response({'detail': 'Already liked'}, status=status.HTTP_400_BAD_REQUEST)
@@ -57,10 +53,7 @@ class PostViewSet(viewsets.ModelViewSet):
 
     @action(detail=True, methods=['post'], permission_classes=[permissions.IsAuthenticated])
     def unlike(self, request, pk=None):
-        """
-        POST /api/posts/{pk}/unlike/ — unlike the post
-        """
-        post = get_object_or_404(Post, pk=pk)
+        post = generics.get_object_or_404(Post, pk=pk)   # <-- switched
         try:
             like = Like.objects.get(user=request.user, post=post)
         except Like.DoesNotExist:
