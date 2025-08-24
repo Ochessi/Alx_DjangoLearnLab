@@ -1,39 +1,31 @@
 from rest_framework import serializers
 from django.contrib.auth import get_user_model
+from rest_framework.authtoken.models import Token
 
 User = get_user_model()
 
 class UserSerializer(serializers.ModelSerializer):
-    followers_count = serializers.IntegerField(source='followers.count', read_only=True)
-    following_count = serializers.IntegerField(source='following.count', read_only=True)
-    profile_picture_url = serializers.SerializerMethodField()
-
     class Meta:
         model = User
-        fields = ['id', 'username', 'email', 'bio', 'profile_picture_url', 'followers_count', 'following_count']
+        fields = ['id', 'username', 'email', 'bio', 'profile_picture']
 
-    def get_profile_picture_url(self, obj):
-        request = self.context.get('request')
-        if obj.profile_picture:
-            try:
-                url = obj.profile_picture.url
-            except ValueError:
-                return None
-            if request:
-                return request.build_absolute_uri(url)
-            return url
-        return None
 
 class RegisterSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(write_only=True)  # explicit CharField
 
     class Meta:
         model = User
         fields = ('id', 'username', 'email', 'password', 'bio', 'profile_picture')
 
     def create(self, validated_data):
-        password = validated_data.pop('password')
-        user = User(**validated_data)
-        user.set_password(password)
-        user.save()
+        # use create_user() manager method
+        user = User.objects.create_user(
+            username=validated_data['username'],
+            email=validated_data.get('email'),
+            password=validated_data['password'],
+            bio=validated_data.get('bio', ''),
+            profile_picture=validated_data.get('profile_picture', None)
+        )
+        # create token explicitly
+        Token.objects.create(user=user)
         return user

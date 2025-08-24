@@ -62,9 +62,9 @@ class PostDetailView(DetailView):
 # Create a post (logged-in users only)
 class PostCreateView(LoginRequiredMixin, CreateView):
     model = Post
-    fields = ['title', 'content']
     template_name = "blog/post_form.html"
     form_class = PostForm
+    success_url = reverse_lazy('home')
 
     def form_valid(self, form):
         form.instance.author = self.request.user
@@ -73,9 +73,9 @@ class PostCreateView(LoginRequiredMixin, CreateView):
 # Edit a post (only the author can)
 class PostUpdateView(LoginRequiredMixin, UserPassesTestMixin, UpdateView):
     model = Post
-    fields = ['title', 'content']
     template_name = "blog/post_form.html"
     form_class = PostForm
+    success_url = reverse_lazy('home')
 
     def form_valid(self, form):
         form.instance.author = self.request.user
